@@ -18,7 +18,7 @@ import javax.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "product_categories")
-@SequenceGenerator(name = "seq_product_category,", sequenceName = "seq_product_category", allocationSize = 1, initialValue = 1)
+@SequenceGenerator(name = "seq_product_category", sequenceName = "seq_product_category", allocationSize = 1, initialValue = 1)
 public class ProductCategory implements Serializable {
 
 	private static final long serialVersionUID = 1L;
