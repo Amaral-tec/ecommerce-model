@@ -28,9 +28,6 @@ import junit.framework.TestCase;
 class AccessTests extends TestCase {
 
 	@Autowired
-	private RandomEntityGenerator randomEntityGenerator;
-
-	@Autowired
 	private WebApplicationContext wac;
 
 	@Autowired
@@ -42,7 +39,7 @@ class AccessTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 	    MockMvc mockMvc = builder.build();
 	    
-	    Access entity = randomEntityGenerator.createAccess();
+	    Access entity = RandomEntityGenerator.createAccess();
 	    
 	    ObjectMapper objectMapper = new ObjectMapper();
 	    
@@ -68,7 +65,7 @@ class AccessTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		Access entity = randomEntityGenerator.createAccess();
+		Access entity = RandomEntityGenerator.createAccess();
 		entity = entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -92,7 +89,7 @@ class AccessTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		Access entity = randomEntityGenerator.createAccess();
+		Access entity = RandomEntityGenerator.createAccess();
 		entity = entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -116,7 +113,7 @@ class AccessTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		Access entity = randomEntityGenerator.createAccess();
+		Access entity = RandomEntityGenerator.createAccess();
 		entity = entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
@@ -142,8 +139,8 @@ class AccessTests extends TestCase {
 	    MockMvc mockMvc = builder.build();
 
 	    List<Access> entityList = new ArrayList<>();
-	    entityList.add(randomEntityGenerator.createAccess());
-	    entityList.add(randomEntityGenerator.createAccess());
+	    entityList.add(RandomEntityGenerator.createAccess());
+	    entityList.add(RandomEntityGenerator.createAccess());
 
 	    entityList = entityRepository.saveAll(entityList);
 
@@ -162,7 +159,7 @@ class AccessTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		Access entity = randomEntityGenerator.createAccess();
+		Access entity = RandomEntityGenerator.createAccess();
 		entity = entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();

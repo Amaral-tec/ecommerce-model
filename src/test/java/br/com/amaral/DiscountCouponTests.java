@@ -18,20 +18,25 @@ import org.springframework.web.context.WebApplicationContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import br.com.amaral.model.PaymentMethod;
-import br.com.amaral.repository.IPaymentMethodRepository;
+import br.com.amaral.model.DiscountCoupon;
+import br.com.amaral.model.LegalEntity;
+import br.com.amaral.repository.IDiscountCouponRepository;
+import br.com.amaral.repository.ILegalEntityRepository;
 import br.com.amaral.service.RandomEntityGenerator;
 import junit.framework.TestCase;
 
 @Profile("test")
 @SpringBootTest
-class PaymentMethodTests extends TestCase {
+class DiscountCouponTests extends TestCase {
 
 	@Autowired
 	private WebApplicationContext wac;
 
 	@Autowired
-	private IPaymentMethodRepository entityRepository;
+	private IDiscountCouponRepository entityRepository;
+		
+	@Autowired
+	private ILegalEntityRepository legalEntityRepository;
 
 	@Test
 	void testRestApiSave() throws JsonProcessingException, Exception {
@@ -39,24 +44,29 @@ class PaymentMethodTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 	    MockMvc mockMvc = builder.build();
 	    
-	    PaymentMethod entity = RandomEntityGenerator.createPaymentMethod();
+	    LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
+	    legalEntityRepository.save(legalEntity);
+	    
+	    DiscountCoupon entity = RandomEntityGenerator.createDiscountCoupon();
+	    entity.setLegalEntity(legalEntity);
 	    
 	    ObjectMapper objectMapper = new ObjectMapper();
 	    
 	    ResultActions returnApi = mockMvc
-	    						 .perform(MockMvcRequestBuilders.post("/create-payment-method")
+	    						 .perform(MockMvcRequestBuilders.post("/create-discount-coupon")
 	    						 .content(objectMapper.writeValueAsString(entity))
 	    						 .accept(MediaType.APPLICATION_JSON)
 	    						 .contentType(MediaType.APPLICATION_JSON));
 	     
 	    System.out.println("API Response: " + returnApi.andReturn().getResponse().getContentAsString());
 	     
-	    PaymentMethod returnEntity = objectMapper.readValue(returnApi.andReturn().getResponse().getContentAsString(),
-	    		PaymentMethod.class);
+	    DiscountCoupon returnEntity = objectMapper.readValue(returnApi.andReturn().getResponse().getContentAsString(),
+	    		DiscountCoupon.class);
 	    
-	    assertEquals(entity.getDescription(), returnEntity.getDescription());
+	    assertEquals(entity.getCode(), returnEntity.getCode());
 	    
 	    entityRepository.deleteById(returnEntity.getId());
+	    legalEntityRepository.deleteById(legalEntity.getId());
 	}
 
 	@Test
@@ -65,13 +75,17 @@ class PaymentMethodTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		PaymentMethod entity = RandomEntityGenerator.createPaymentMethod();
+		LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
+	    legalEntityRepository.save(legalEntity);
+	    
+	    DiscountCoupon entity = RandomEntityGenerator.createDiscountCoupon();
+	    entity.setLegalEntity(legalEntity);
 		entity = entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
 		ResultActions returnApi = mockMvc
-				.perform(MockMvcRequestBuilders.post("/delete-payment-method").content(objectMapper.writeValueAsString(entity))
+				.perform(MockMvcRequestBuilders.post("/delete-discount-coupon").content(objectMapper.writeValueAsString(entity))
 				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON));
 
 		System.out.println("API Response: " + returnApi.andReturn().getResponse().getContentAsString());
@@ -81,6 +95,7 @@ class PaymentMethodTests extends TestCase {
 		assertEquals(200, returnApi.andReturn().getResponse().getStatus());
 
 		entityRepository.deleteById(entity.getId());
+		legalEntityRepository.deleteById(legalEntity.getId());
 	}
 
 	@Test
@@ -89,13 +104,17 @@ class PaymentMethodTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		PaymentMethod entity = RandomEntityGenerator.createPaymentMethod();
+		LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
+	    legalEntityRepository.save(legalEntity);
+	    
+	    DiscountCoupon entity = RandomEntityGenerator.createDiscountCoupon();
+	    entity.setLegalEntity(legalEntity);
 		entity = entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
 		ResultActions returnApi = mockMvc.perform(MockMvcRequestBuilders
-				.delete("/delete-payment-method-by-id/" + entity.getId()).content(objectMapper.writeValueAsString(entity))
+				.delete("/delete-discount-coupon-by-id/" + entity.getId()).content(objectMapper.writeValueAsString(entity))
 				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON));
 
 		System.out.println("API Response: " + returnApi.andReturn().getResponse().getContentAsString());
@@ -105,6 +124,7 @@ class PaymentMethodTests extends TestCase {
 		assertEquals(200, returnApi.andReturn().getResponse().getStatus());
 
 		entityRepository.deleteById(entity.getId());
+		legalEntityRepository.deleteById(legalEntity.getId());
 	}
 
 	@Test
@@ -113,23 +133,28 @@ class PaymentMethodTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		PaymentMethod entity = RandomEntityGenerator.createPaymentMethod();
+		LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
+	    legalEntityRepository.save(legalEntity);
+	    
+	    DiscountCoupon entity = RandomEntityGenerator.createDiscountCoupon();
+	    entity.setLegalEntity(legalEntity);
 		entity = entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
-		ResultActions returnApi = mockMvc.perform(MockMvcRequestBuilders.get("/get-payment-method/" + entity.getId())
+		ResultActions returnApi = mockMvc.perform(MockMvcRequestBuilders.get("/get-discount-coupon/" + entity.getId())
 				.content(objectMapper.writeValueAsString(entity)).accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_JSON));
 
 		assertEquals(200, returnApi.andReturn().getResponse().getStatus());
 
-		PaymentMethod returnEntity = objectMapper.readValue(returnApi.andReturn().getResponse().getContentAsString(),
-				PaymentMethod.class);
+		DiscountCoupon returnEntity = objectMapper.readValue(returnApi.andReturn().getResponse().getContentAsString(),
+				DiscountCoupon.class);
 
 		assertEquals(entity.getId(), returnEntity.getId());
 
 		entityRepository.deleteById(entity.getId());
+		legalEntityRepository.deleteById(legalEntity.getId());
 	}
 	
 	@Test
@@ -138,19 +163,27 @@ class PaymentMethodTests extends TestCase {
 	    DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 	    MockMvc mockMvc = builder.build();
 
-	    List<PaymentMethod> entityList = new ArrayList<>();
-	    entityList.add(RandomEntityGenerator.createPaymentMethod());
-	    entityList.add(RandomEntityGenerator.createPaymentMethod());
+	    LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
+	    legalEntityRepository.save(legalEntity);
+	    
+	    List<DiscountCoupon> entityList = new ArrayList<>();
+	    for (int i = 0; i < 2; i++) {
+	        DiscountCoupon entity = RandomEntityGenerator.createDiscountCoupon();
+	        entity.setLegalEntity(legalEntity);
+	        entityList.add(entityRepository.save(entity));
+	    }
 
-	    entityList = entityRepository.saveAll(entityList);
-
-	    ResultActions returnApi = mockMvc.perform(MockMvcRequestBuilders.get("/find-all-payment-method")
+	    ResultActions returnApi = mockMvc.perform(MockMvcRequestBuilders.get("/find-all-discount-coupon")
 	            .accept(MediaType.APPLICATION_JSON)
 	            .contentType(MediaType.APPLICATION_JSON));
 
 	    assertEquals(200, returnApi.andReturn().getResponse().getStatus());
 
-	    entityRepository.deleteAll(entityList);
+	    for (DiscountCoupon entity : entityList) {
+	        entityRepository.deleteById(entity.getId());
+	    }
+	    
+	    legalEntityRepository.deleteById(legalEntity.getId());
 	}
 
 	@Test
@@ -159,17 +192,22 @@ class PaymentMethodTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		PaymentMethod entity = RandomEntityGenerator.createPaymentMethod();
+		LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
+	    legalEntityRepository.save(legalEntity);
+	    
+	    DiscountCoupon entity = RandomEntityGenerator.createDiscountCoupon();
+	    entity.setLegalEntity(legalEntity);
 		entity = entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
 		ResultActions returnApi = mockMvc.perform(MockMvcRequestBuilders
-				.get("/find-payment-method-by-name/" + entity.getDescription()).content(objectMapper.writeValueAsString(entity))
+				.get("/find-discount-coupon-by-name/" + entity.getCode()).content(objectMapper.writeValueAsString(entity))
 				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON));
 
 		assertEquals(200, returnApi.andReturn().getResponse().getStatus());
 
 		entityRepository.deleteById(entity.getId());
+		legalEntityRepository.deleteById(legalEntity.getId());
 	}
 }
