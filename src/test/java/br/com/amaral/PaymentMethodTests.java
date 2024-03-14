@@ -66,7 +66,7 @@ class PaymentMethodTests extends TestCase {
 		MockMvc mockMvc = builder.build();
 
 		PaymentMethod entity = RandomEntityGenerator.createPaymentMethod();
-		entity = entityRepository.save(entity);
+		entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -90,7 +90,7 @@ class PaymentMethodTests extends TestCase {
 		MockMvc mockMvc = builder.build();
 
 		PaymentMethod entity = RandomEntityGenerator.createPaymentMethod();
-		entity = entityRepository.save(entity);
+		entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -114,7 +114,7 @@ class PaymentMethodTests extends TestCase {
 		MockMvc mockMvc = builder.build();
 
 		PaymentMethod entity = RandomEntityGenerator.createPaymentMethod();
-		entity = entityRepository.save(entity);
+		entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -142,7 +142,7 @@ class PaymentMethodTests extends TestCase {
 	    entityList.add(RandomEntityGenerator.createPaymentMethod());
 	    entityList.add(RandomEntityGenerator.createPaymentMethod());
 
-	    entityList = entityRepository.saveAll(entityList);
+	    entityRepository.saveAll(entityList);
 
 	    ResultActions returnApi = mockMvc.perform(MockMvcRequestBuilders.get("/find-all-payment-method")
 	            .accept(MediaType.APPLICATION_JSON)
@@ -160,7 +160,7 @@ class PaymentMethodTests extends TestCase {
 		MockMvc mockMvc = builder.build();
 
 		PaymentMethod entity = RandomEntityGenerator.createPaymentMethod();
-		entity = entityRepository.save(entity);
+		entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 

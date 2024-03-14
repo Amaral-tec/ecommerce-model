@@ -44,11 +44,7 @@ class ProductCategoryTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 	    MockMvc mockMvc = builder.build();
 	    
-	    LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
-	    legalEntityRepository.save(legalEntity);
-	    
-	    ProductCategory entity = RandomEntityGenerator.createProductCategory();
-	    entity.setLegalEntity(legalEntity);
+	    ProductCategory entity = createMockEntity();
 	    
 	    ObjectMapper objectMapper = new ObjectMapper();
 	    
@@ -65,8 +61,7 @@ class ProductCategoryTests extends TestCase {
 	    
 	    assertEquals(entity.getDescription(), returnEntity.getDescription());
 	    
-	    entityRepository.deleteById(returnEntity.getId());
-	    legalEntityRepository.deleteById(legalEntity.getId());
+	    deleteMockEntity(returnEntity);
 	}
 
 	@Test
@@ -74,13 +69,9 @@ class ProductCategoryTests extends TestCase {
 
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
-
-		LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
-	    legalEntityRepository.save(legalEntity);
-	    
-	    ProductCategory entity = RandomEntityGenerator.createProductCategory();
-	    entity.setLegalEntity(legalEntity);
-		entity = entityRepository.save(entity);
+    
+	    ProductCategory entity = createMockEntity();
+		entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -94,8 +85,7 @@ class ProductCategoryTests extends TestCase {
 		assertEquals("OK: Deletion completed successfully.", returnApi.andReturn().getResponse().getContentAsString());
 		assertEquals(200, returnApi.andReturn().getResponse().getStatus());
 
-		entityRepository.deleteById(entity.getId());
-		legalEntityRepository.deleteById(legalEntity.getId());
+		deleteMockEntity(entity);
 	}
 
 	@Test
@@ -104,12 +94,8 @@ class ProductCategoryTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
-	    legalEntityRepository.save(legalEntity);
-	    
-	    ProductCategory entity = RandomEntityGenerator.createProductCategory();
-	    entity.setLegalEntity(legalEntity);
-		entity = entityRepository.save(entity);
+		ProductCategory entity = createMockEntity();
+		entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -123,8 +109,7 @@ class ProductCategoryTests extends TestCase {
 		assertEquals("OK: Deletion completed successfully.", returnApi.andReturn().getResponse().getContentAsString());
 		assertEquals(200, returnApi.andReturn().getResponse().getStatus());
 
-		entityRepository.deleteById(entity.getId());
-		legalEntityRepository.deleteById(legalEntity.getId());
+		deleteMockEntity(entity);
 	}
 
 	@Test
@@ -133,12 +118,8 @@ class ProductCategoryTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
-	    legalEntityRepository.save(legalEntity);
-	    
-	    ProductCategory entity = RandomEntityGenerator.createProductCategory();
-	    entity.setLegalEntity(legalEntity);
-		entity = entityRepository.save(entity);
+		ProductCategory entity = createMockEntity();
+		entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -153,8 +134,7 @@ class ProductCategoryTests extends TestCase {
 
 		assertEquals(entity.getId(), returnEntity.getId());
 
-		entityRepository.deleteById(entity.getId());
-		legalEntityRepository.deleteById(legalEntity.getId());
+		deleteMockEntity(entity);
 	}
 	
 	@Test
@@ -162,14 +142,10 @@ class ProductCategoryTests extends TestCase {
 
 	    DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 	    MockMvc mockMvc = builder.build();
-
-	    LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
-	    legalEntityRepository.save(legalEntity);
 	    
 	    List<ProductCategory> entityList = new ArrayList<>();
 	    for (int i = 0; i < 2; i++) {
-	    	ProductCategory entity = RandomEntityGenerator.createProductCategory();
-	        entity.setLegalEntity(legalEntity);
+	    	ProductCategory entity = createMockEntity();
 	        entityList.add(entityRepository.save(entity));
 	    }
 
@@ -180,10 +156,8 @@ class ProductCategoryTests extends TestCase {
 	    assertEquals(200, returnApi.andReturn().getResponse().getStatus());
 
 	    for (ProductCategory entity : entityList) {
-	        entityRepository.deleteById(entity.getId());
+	    	deleteMockEntity(entity);
 	    }
-	    
-	    legalEntityRepository.deleteById(legalEntity.getId());
 	}
 
 	@Test
@@ -192,12 +166,8 @@ class ProductCategoryTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
-	    legalEntityRepository.save(legalEntity);
-	    
-	    ProductCategory entity = RandomEntityGenerator.createProductCategory();
-	    entity.setLegalEntity(legalEntity);
-		entity = entityRepository.save(entity);
+		ProductCategory entity = createMockEntity();
+		entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -207,7 +177,23 @@ class ProductCategoryTests extends TestCase {
 
 		assertEquals(200, returnApi.andReturn().getResponse().getStatus());
 
+		deleteMockEntity(entity);
+	}
+	
+	private ProductCategory createMockEntity() {
+
+		LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
+		legalEntityRepository.save(legalEntity);
+
+		ProductCategory entity = RandomEntityGenerator.createProductCategory();
+		entity.setLegalEntity(legalEntity);
+
+		return entity;
+	}
+
+	private void deleteMockEntity(ProductCategory entity) {
+
 		entityRepository.deleteById(entity.getId());
-		legalEntityRepository.deleteById(legalEntity.getId());
+		legalEntityRepository.deleteById(entity.getLegalEntity().getId());
 	}
 }

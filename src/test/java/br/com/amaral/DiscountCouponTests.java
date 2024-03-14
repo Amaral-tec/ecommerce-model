@@ -43,12 +43,8 @@ class DiscountCouponTests extends TestCase {
 
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 	    MockMvc mockMvc = builder.build();
-	    
-	    LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
-	    legalEntityRepository.save(legalEntity);
-	    
-	    DiscountCoupon entity = RandomEntityGenerator.createDiscountCoupon();
-	    entity.setLegalEntity(legalEntity);
+	   
+	    DiscountCoupon entity = createMockEntity();
 	    
 	    ObjectMapper objectMapper = new ObjectMapper();
 	    
@@ -65,8 +61,7 @@ class DiscountCouponTests extends TestCase {
 	    
 	    assertEquals(entity.getCode(), returnEntity.getCode());
 	    
-	    entityRepository.deleteById(returnEntity.getId());
-	    legalEntityRepository.deleteById(legalEntity.getId());
+	    deleteMockEntity(returnEntity);
 	}
 
 	@Test
@@ -75,12 +70,8 @@ class DiscountCouponTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
-	    legalEntityRepository.save(legalEntity);
-	    
-	    DiscountCoupon entity = RandomEntityGenerator.createDiscountCoupon();
-	    entity.setLegalEntity(legalEntity);
-		entity = entityRepository.save(entity);
+		DiscountCoupon entity = createMockEntity();
+		entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -94,8 +85,7 @@ class DiscountCouponTests extends TestCase {
 		assertEquals("OK: Deletion completed successfully.", returnApi.andReturn().getResponse().getContentAsString());
 		assertEquals(200, returnApi.andReturn().getResponse().getStatus());
 
-		entityRepository.deleteById(entity.getId());
-		legalEntityRepository.deleteById(legalEntity.getId());
+		deleteMockEntity(entity);
 	}
 
 	@Test
@@ -104,12 +94,8 @@ class DiscountCouponTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
-	    legalEntityRepository.save(legalEntity);
-	    
-	    DiscountCoupon entity = RandomEntityGenerator.createDiscountCoupon();
-	    entity.setLegalEntity(legalEntity);
-		entity = entityRepository.save(entity);
+		DiscountCoupon entity = createMockEntity();
+		entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -123,8 +109,7 @@ class DiscountCouponTests extends TestCase {
 		assertEquals("OK: Deletion completed successfully.", returnApi.andReturn().getResponse().getContentAsString());
 		assertEquals(200, returnApi.andReturn().getResponse().getStatus());
 
-		entityRepository.deleteById(entity.getId());
-		legalEntityRepository.deleteById(legalEntity.getId());
+		deleteMockEntity(entity);
 	}
 
 	@Test
@@ -133,12 +118,8 @@ class DiscountCouponTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
-	    legalEntityRepository.save(legalEntity);
-	    
-	    DiscountCoupon entity = RandomEntityGenerator.createDiscountCoupon();
-	    entity.setLegalEntity(legalEntity);
-		entity = entityRepository.save(entity);
+		DiscountCoupon entity = createMockEntity();
+		entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -153,8 +134,7 @@ class DiscountCouponTests extends TestCase {
 
 		assertEquals(entity.getId(), returnEntity.getId());
 
-		entityRepository.deleteById(entity.getId());
-		legalEntityRepository.deleteById(legalEntity.getId());
+		deleteMockEntity(entity);
 	}
 	
 	@Test
@@ -162,14 +142,10 @@ class DiscountCouponTests extends TestCase {
 
 	    DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 	    MockMvc mockMvc = builder.build();
-
-	    LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
-	    legalEntityRepository.save(legalEntity);
 	    
 	    List<DiscountCoupon> entityList = new ArrayList<>();
 	    for (int i = 0; i < 2; i++) {
-	        DiscountCoupon entity = RandomEntityGenerator.createDiscountCoupon();
-	        entity.setLegalEntity(legalEntity);
+	        DiscountCoupon entity = createMockEntity();
 	        entityList.add(entityRepository.save(entity));
 	    }
 
@@ -180,10 +156,8 @@ class DiscountCouponTests extends TestCase {
 	    assertEquals(200, returnApi.andReturn().getResponse().getStatus());
 
 	    for (DiscountCoupon entity : entityList) {
-	        entityRepository.deleteById(entity.getId());
-	    }
-	    
-	    legalEntityRepository.deleteById(legalEntity.getId());
+	    	deleteMockEntity(entity);
+	    }	    
 	}
 
 	@Test
@@ -192,12 +166,8 @@ class DiscountCouponTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
-	    legalEntityRepository.save(legalEntity);
-	    
-	    DiscountCoupon entity = RandomEntityGenerator.createDiscountCoupon();
-	    entity.setLegalEntity(legalEntity);
-		entity = entityRepository.save(entity);
+		DiscountCoupon entity = createMockEntity();
+		entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -207,7 +177,23 @@ class DiscountCouponTests extends TestCase {
 
 		assertEquals(200, returnApi.andReturn().getResponse().getStatus());
 
+		deleteMockEntity(entity);
+	}
+	
+	private DiscountCoupon createMockEntity() {
+ 
+	    LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
+	    legalEntityRepository.save(legalEntity);
+	    
+	    DiscountCoupon entity = RandomEntityGenerator.createDiscountCoupon();
+	    entity.setLegalEntity(legalEntity);
+
+		return entity;
+	}
+
+	private void deleteMockEntity(DiscountCoupon entity) {
+		
 		entityRepository.deleteById(entity.getId());
-		legalEntityRepository.deleteById(legalEntity.getId());
+		legalEntityRepository.deleteById(entity.getLegalEntity().getId());
 	}
 }

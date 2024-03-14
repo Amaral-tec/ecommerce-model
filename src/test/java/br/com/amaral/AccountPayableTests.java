@@ -49,16 +49,7 @@ class AccountPayableTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 	    MockMvc mockMvc = builder.build();
 	    
-	    Individual individual = RandomEntityGenerator.generateIndividual();
-	    individualRepository.save(individual);
-	    
-	    LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
-	    legalEntityRepository.save(legalEntity);
-	    
-	    AccountPayable entity = RandomEntityGenerator.createAccountPayable();
-	    entity.setIndividual(individual);
-	    entity.setSupplier(legalEntity);
-	    entity.setLegalEntity(legalEntity);
+	    AccountPayable entity = createMockEntity();
 	    
 	    ObjectMapper objectMapper = new ObjectMapper();
 	    
@@ -75,9 +66,7 @@ class AccountPayableTests extends TestCase {
 	    
 	    assertEquals(entity.getDescription(), returnEntity.getDescription());
 	    
-	    entityRepository.deleteById(returnEntity.getId());
-	    individualRepository.deleteById(individual.getId());
-	    legalEntityRepository.deleteById(legalEntity.getId());
+	    deleteMockEntity(returnEntity);
 	}
 
 	@Test
@@ -86,17 +75,8 @@ class AccountPayableTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		Individual individual = RandomEntityGenerator.generateIndividual();
-	    individualRepository.save(individual);
-	    
-	    LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
-	    legalEntityRepository.save(legalEntity);
-	    
-	    AccountPayable entity = RandomEntityGenerator.createAccountPayable();
-	    entity.setIndividual(individual);
-	    entity.setSupplier(legalEntity);
-	    entity.setLegalEntity(legalEntity);
-		entity = entityRepository.save(entity);
+		AccountPayable entity = createMockEntity();
+		entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -110,9 +90,7 @@ class AccountPayableTests extends TestCase {
 		assertEquals("OK: Deletion completed successfully.", returnApi.andReturn().getResponse().getContentAsString());
 		assertEquals(200, returnApi.andReturn().getResponse().getStatus());
 
-		entityRepository.deleteById(entity.getId());
-		individualRepository.deleteById(individual.getId());
-		legalEntityRepository.deleteById(legalEntity.getId());
+		deleteMockEntity(entity);
 	}
 
 	@Test
@@ -121,17 +99,8 @@ class AccountPayableTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		Individual individual = RandomEntityGenerator.generateIndividual();
-	    individualRepository.save(individual);
-	    
-	    LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
-	    legalEntityRepository.save(legalEntity);
-	    
-	    AccountPayable entity = RandomEntityGenerator.createAccountPayable();
-	    entity.setIndividual(individual);
-	    entity.setSupplier(legalEntity);
-	    entity.setLegalEntity(legalEntity);
-		entity = entityRepository.save(entity);
+		AccountPayable entity = createMockEntity();
+		entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -145,9 +114,7 @@ class AccountPayableTests extends TestCase {
 		assertEquals("OK: Deletion completed successfully.", returnApi.andReturn().getResponse().getContentAsString());
 		assertEquals(200, returnApi.andReturn().getResponse().getStatus());
 
-		entityRepository.deleteById(entity.getId());
-		individualRepository.deleteById(individual.getId());
-		legalEntityRepository.deleteById(legalEntity.getId());
+		deleteMockEntity(entity);
 	}
 
 	@Test
@@ -156,17 +123,8 @@ class AccountPayableTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		Individual individual = RandomEntityGenerator.generateIndividual();
-	    individualRepository.save(individual);
-	    
-	    LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
-	    legalEntityRepository.save(legalEntity);
-	    
-	    AccountPayable entity = RandomEntityGenerator.createAccountPayable();
-	    entity.setIndividual(individual);
-	    entity.setSupplier(legalEntity);
-	    entity.setLegalEntity(legalEntity);
-		entity = entityRepository.save(entity);
+		AccountPayable entity = createMockEntity();
+		entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -181,9 +139,7 @@ class AccountPayableTests extends TestCase {
 
 		assertEquals(entity.getId(), returnEntity.getId());
 
-		entityRepository.deleteById(entity.getId());
-		individualRepository.deleteById(individual.getId());
-		legalEntityRepository.deleteById(legalEntity.getId());
+		deleteMockEntity(entity);
 	}
 	
 	@Test
@@ -191,19 +147,10 @@ class AccountPayableTests extends TestCase {
 
 	    DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 	    MockMvc mockMvc = builder.build();
-
-	    Individual individual = RandomEntityGenerator.generateIndividual();
-	    individualRepository.save(individual);
-	    
-	    LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
-	    legalEntityRepository.save(legalEntity);
 	    
 	    List<AccountPayable> entityList = new ArrayList<>();
 	    for (int i = 0; i < 2; i++) {
-	    	AccountPayable entity = RandomEntityGenerator.createAccountPayable();
-	    	entity.setIndividual(individual);
-		    entity.setSupplier(legalEntity);
-		    entity.setLegalEntity(legalEntity);
+	    	AccountPayable entity = createMockEntity();
 	        entityList.add(entityRepository.save(entity));
 	    }
 
@@ -214,11 +161,9 @@ class AccountPayableTests extends TestCase {
 	    assertEquals(200, returnApi.andReturn().getResponse().getStatus());
 
 	    for (AccountPayable entity : entityList) {
-	        entityRepository.deleteById(entity.getId());
+	    	deleteMockEntity(entity);
 	    }
 	    
-	    individualRepository.deleteById(individual.getId());
-	    legalEntityRepository.deleteById(legalEntity.getId());
 	}
 
 	@Test
@@ -227,17 +172,8 @@ class AccountPayableTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		Individual individual = RandomEntityGenerator.generateIndividual();
-	    individualRepository.save(individual);
-	    
-	    LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
-	    legalEntityRepository.save(legalEntity);
-	    
-	    AccountPayable entity = RandomEntityGenerator.createAccountPayable();
-	    entity.setIndividual(individual);
-	    entity.setSupplier(legalEntity);
-	    entity.setLegalEntity(legalEntity);
-		entity = entityRepository.save(entity);
+		AccountPayable entity = createMockEntity();
+		entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -247,9 +183,7 @@ class AccountPayableTests extends TestCase {
 
 		assertEquals(200, returnApi.andReturn().getResponse().getStatus());
 
-		entityRepository.deleteById(entity.getId());
-		individualRepository.deleteById(individual.getId());
-		legalEntityRepository.deleteById(legalEntity.getId());
+		deleteMockEntity(entity);
 	}
 	
 	@Test
@@ -258,17 +192,8 @@ class AccountPayableTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		Individual individual = RandomEntityGenerator.generateIndividual();
-	    individualRepository.save(individual);
-	    
-	    LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
-	    legalEntityRepository.save(legalEntity);
-	    
-	    AccountPayable entity = RandomEntityGenerator.createAccountPayable();
-	    entity.setIndividual(individual);
-	    entity.setSupplier(legalEntity);
-	    entity.setLegalEntity(legalEntity);
-		entity = entityRepository.save(entity);
+		AccountPayable entity = createMockEntity();
+		entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -278,9 +203,7 @@ class AccountPayableTests extends TestCase {
 
 		assertEquals(200, returnApi.andReturn().getResponse().getStatus());
 
-		entityRepository.deleteById(entity.getId());
-		individualRepository.deleteById(individual.getId());
-		legalEntityRepository.deleteById(legalEntity.getId());
+		deleteMockEntity(entity);
 	}
 	
 	@Test
@@ -289,17 +212,8 @@ class AccountPayableTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		Individual individual = RandomEntityGenerator.generateIndividual();
-	    individualRepository.save(individual);
-	    
-	    LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
-	    legalEntityRepository.save(legalEntity);
-	    
-	    AccountPayable entity = RandomEntityGenerator.createAccountPayable();
-	    entity.setIndividual(individual);
-	    entity.setSupplier(legalEntity);
-	    entity.setLegalEntity(legalEntity);
-		entity = entityRepository.save(entity);
+		AccountPayable entity = createMockEntity();
+		entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
@@ -309,9 +223,7 @@ class AccountPayableTests extends TestCase {
 
 		assertEquals(200, returnApi.andReturn().getResponse().getStatus());
 
-		entityRepository.deleteById(entity.getId());
-		individualRepository.deleteById(individual.getId());
-		legalEntityRepository.deleteById(legalEntity.getId());
+		deleteMockEntity(entity);
 	}
 	
 	@Test
@@ -319,6 +231,22 @@ class AccountPayableTests extends TestCase {
 
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
+
+		AccountPayable entity = createMockEntity();
+		entityRepository.save(entity);
+
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		ResultActions returnApi = mockMvc.perform(MockMvcRequestBuilders
+				.get("/find-account-payable-by-legal-entity/" + entity.getLegalEntity().getId()).content(objectMapper.writeValueAsString(entity))
+				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON));
+
+		assertEquals(200, returnApi.andReturn().getResponse().getStatus());
+
+		deleteMockEntity(entity);
+	}
+	
+	private AccountPayable createMockEntity() {
 
 		Individual individual = RandomEntityGenerator.generateIndividual();
 	    individualRepository.save(individual);
@@ -330,18 +258,14 @@ class AccountPayableTests extends TestCase {
 	    entity.setIndividual(individual);
 	    entity.setSupplier(legalEntity);
 	    entity.setLegalEntity(legalEntity);
-		entity = entityRepository.save(entity);
 
-		ObjectMapper objectMapper = new ObjectMapper();
+		return entity;
+	}
 
-		ResultActions returnApi = mockMvc.perform(MockMvcRequestBuilders
-				.get("/find-account-payable-by-legal-entity/" + entity.getLegalEntity().getId()).content(objectMapper.writeValueAsString(entity))
-				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON));
-
-		assertEquals(200, returnApi.andReturn().getResponse().getStatus());
-
+	private void deleteMockEntity(AccountPayable entity) {
+		
 		entityRepository.deleteById(entity.getId());
-		individualRepository.deleteById(individual.getId());
-		legalEntityRepository.deleteById(legalEntity.getId());
+		individualRepository.deleteById(entity.getIndividual().getId());
+		legalEntityRepository.deleteById(entity.getLegalEntity().getId());
 	}
 }

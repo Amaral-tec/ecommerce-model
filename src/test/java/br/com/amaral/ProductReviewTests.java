@@ -1,8 +1,5 @@
 package br.com.amaral;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,35 +18,40 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import br.com.amaral.model.Product;
 import br.com.amaral.model.ProductBrand;
 import br.com.amaral.model.ProductCategory;
-import br.com.amaral.model.ProductImage;
+import br.com.amaral.model.ProductReview;
+import br.com.amaral.model.Individual;
 import br.com.amaral.model.LegalEntity;
 import br.com.amaral.repository.IProductRepository;
+import br.com.amaral.repository.IIndividualRepository;
 import br.com.amaral.repository.ILegalEntityRepository;
 import br.com.amaral.repository.IProductBrandRepository;
 import br.com.amaral.repository.IProductCategoryRepository;
-import br.com.amaral.repository.IProductImageRepository;
+import br.com.amaral.repository.IProductReviewRepository;
 import br.com.amaral.service.RandomEntityGenerator;
 import junit.framework.TestCase;
 
 @Profile("test")
 @SpringBootTest
-class ProductTests extends TestCase {
+class ProductReviewTests extends TestCase {
 
 	@Autowired
-	private IProductRepository entityRepository;
+	private IIndividualRepository individualRepository;
 	
-	@Autowired
-	private IProductBrandRepository productBrandRepository;
-	
-	@Autowired
-	private IProductCategoryRepository productCategoryRepository;
-	
-	@Autowired
-	private IProductImageRepository productImageRepository;
-		
 	@Autowired
 	private ILegalEntityRepository legalEntityRepository;
 	
+	@Autowired
+	private IProductReviewRepository entityRepository;
+
+	@Autowired
+	private IProductBrandRepository productBrandRepository;
+
+	@Autowired
+	private IProductCategoryRepository productCategoryRepository;
+
+	@Autowired
+	private IProductRepository productRepository;
+
 	@Autowired
 	private WebApplicationContext wac;
 
@@ -57,37 +59,24 @@ class ProductTests extends TestCase {
 	void testRestApiSave() throws JsonProcessingException, Exception {
 
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
-	    MockMvc mockMvc = builder.build();
-	    
-	    Product entity = createMockEntity();
-	    
-	    List<ProductImage> productImages = new ArrayList<>();
-	    productImages.add(RandomEntityGenerator.createProductImage());
-	    productImages.add(RandomEntityGenerator.createProductImage());
-	    
-	    entity.setImages(productImages);
-	    
-	    ObjectMapper objectMapper = new ObjectMapper();
-	    
-	    ResultActions returnApi = mockMvc
-	    						 .perform(MockMvcRequestBuilders.post("/create-product")
-	    						 .content(objectMapper.writeValueAsString(entity))
-	    						 .accept(MediaType.APPLICATION_JSON)
-	    						 .contentType(MediaType.APPLICATION_JSON));
-	     
-	    System.out.println("API Response: " + returnApi.andReturn().getResponse().getContentAsString());
-	     
-	    Product returnEntity = objectMapper.readValue(returnApi.andReturn().getResponse().getContentAsString(),
-	    		Product.class);
-	    
-	    assertEquals(entity.getDescription(), returnEntity.getDescription());
-	    
+		MockMvc mockMvc = builder.build();
 
-	    for (ProductImage productImage : returnEntity.getImages()) {
-	    	productImageRepository.deleteById(productImage.getId());
-	    }
-	    
-	    deleteMockEntity(returnEntity);
+		ProductReview entity = createMockEntity();
+
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		ResultActions returnApi = mockMvc.perform(
+				MockMvcRequestBuilders.post("/create-product-review").content(objectMapper.writeValueAsString(entity))
+						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON));
+
+		System.out.println("API Response: " + returnApi.andReturn().getResponse().getContentAsString());
+
+		ProductReview returnEntity = objectMapper.readValue(returnApi.andReturn().getResponse().getContentAsString(),
+				ProductReview.class);
+
+		assertEquals(entity.getDescription(), returnEntity.getDescription());
+
+		deleteMockEntity(returnEntity);
 	}
 
 	@Test
@@ -96,14 +85,14 @@ class ProductTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		Product entity = createMockEntity();
+		ProductReview entity = createMockEntity();
 		entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
-		ResultActions returnApi = mockMvc
-				.perform(MockMvcRequestBuilders.post("/delete-product").content(objectMapper.writeValueAsString(entity))
-				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON));
+		ResultActions returnApi = mockMvc.perform(
+				MockMvcRequestBuilders.post("/delete-product-review").content(objectMapper.writeValueAsString(entity))
+						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON));
 
 		System.out.println("API Response: " + returnApi.andReturn().getResponse().getContentAsString());
 		System.out.println("API Status: " + returnApi.andReturn().getResponse().getStatus());
@@ -113,21 +102,22 @@ class ProductTests extends TestCase {
 
 		deleteMockEntity(entity);
 	}
-	
+
 	@Test
 	void testRestApiDeleteById() throws JsonProcessingException, Exception {
 
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		Product entity = createMockEntity();
+		ProductReview entity = createMockEntity();
 		entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
-		ResultActions returnApi = mockMvc.perform(MockMvcRequestBuilders
-				.delete("/delete-product-by-id/" + entity.getId()).content(objectMapper.writeValueAsString(entity))
-				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON));
+		ResultActions returnApi = mockMvc
+				.perform(MockMvcRequestBuilders.delete("/delete-product-review-by-id/" + entity.getId())
+						.content(objectMapper.writeValueAsString(entity)).accept(MediaType.APPLICATION_JSON)
+						.contentType(MediaType.APPLICATION_JSON));
 
 		System.out.println("API Response: " + returnApi.andReturn().getResponse().getContentAsString());
 		System.out.println("API Status: " + returnApi.andReturn().getResponse().getStatus());
@@ -139,70 +129,70 @@ class ProductTests extends TestCase {
 	}
 	
 	@Test
-	void testRestApiGetById() throws JsonProcessingException, Exception {
+	void testRestApiGetByProduct() throws JsonProcessingException, Exception {
 
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		Product entity = createMockEntity();
+		ProductReview entity = createMockEntity();
 		entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
-		ResultActions returnApi = mockMvc.perform(MockMvcRequestBuilders.get("/get-product/" + entity.getId())
+		ResultActions returnApi = mockMvc.perform(MockMvcRequestBuilders.get("/find-product-review-by-product/" + entity.getProduct().getId())
 				.content(objectMapper.writeValueAsString(entity)).accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_JSON));
 
 		assertEquals(200, returnApi.andReturn().getResponse().getStatus());
 
-		Product returnEntity = objectMapper.readValue(returnApi.andReturn().getResponse().getContentAsString(),
-				Product.class);
+		deleteMockEntity(entity);
+	}
+	
+	@Test
+	void testRestApiGetByPerson() throws JsonProcessingException, Exception {
 
-		assertEquals(entity.getId(), returnEntity.getId());
+		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
+		MockMvc mockMvc = builder.build();
+
+		ProductReview entity = createMockEntity();
+		entityRepository.save(entity);
+
+		ObjectMapper objectMapper = new ObjectMapper();
+
+		ResultActions returnApi = mockMvc.perform(MockMvcRequestBuilders.get("/find-product-review-by-person/" + entity.getIndividual().getId())
+				.content(objectMapper.writeValueAsString(entity)).accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON));
+
+		assertEquals(200, returnApi.andReturn().getResponse().getStatus());
 
 		deleteMockEntity(entity);
 	}
 	
 	@Test
-	void testRestApiFindAll() throws JsonProcessingException, Exception {
-
-	    DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
-	    MockMvc mockMvc = builder.build();
-
-	    Product entity = createMockEntity();
-		entityRepository.save(entity);
-
-	    ResultActions returnApi = mockMvc.perform(MockMvcRequestBuilders.get("/find-all-product")
-	            .accept(MediaType.APPLICATION_JSON)
-	            .contentType(MediaType.APPLICATION_JSON));
-
-	    assertEquals(200, returnApi.andReturn().getResponse().getStatus());
-
-	    deleteMockEntity(entity);
-	}
-	
-	@Test
-	void testRestApiGetByDescription() throws JsonProcessingException, Exception {
+	void testRestApiGetByProductPerson() throws JsonProcessingException, Exception {
 
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		Product entity = createMockEntity();
+		ProductReview entity = createMockEntity();
 		entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
-		ResultActions returnApi = mockMvc.perform(MockMvcRequestBuilders
-				.get("/find-product-by-name/" + entity.getDescription()).content(objectMapper.writeValueAsString(entity))
-				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON));
+		ResultActions returnApi = mockMvc.perform(MockMvcRequestBuilders.get("/find-product-review-by-product-person/" + entity.getProduct().getId() + "/" + entity.getIndividual().getId())
+				.content(objectMapper.writeValueAsString(entity)).accept(MediaType.APPLICATION_JSON)
+				.contentType(MediaType.APPLICATION_JSON));
 
 		assertEquals(200, returnApi.andReturn().getResponse().getStatus());
 
 		deleteMockEntity(entity);
 	}
 
-	private Product createMockEntity() {
+	private ProductReview createMockEntity() {
 
+		Individual individual = RandomEntityGenerator.generateIndividual();
+	    individualRepository.save(individual);
+		
 		LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
 		legalEntityRepository.save(legalEntity);
 
@@ -214,19 +204,28 @@ class ProductTests extends TestCase {
 		productCategory.setLegalEntity(legalEntity);
 		productCategoryRepository.save(productCategory);
 
-	    Product entity = RandomEntityGenerator.createProduct();
-	    entity.setLegalEntity(legalEntity);
-	    entity.setProductCategory(productCategory);
-	    entity.setProductBrand(productBrand);
+		Product product = RandomEntityGenerator.createProduct();
+		product.setLegalEntity(legalEntity);
+		product.setProductCategory(productCategory);
+		product.setProductBrand(productBrand);
+		productRepository.save(product);
+
+		ProductReview entity = RandomEntityGenerator.createProductReview();
+		entity.setIndividual(individual);
+		entity.setLegalEntity(legalEntity);
+		entity.setProduct(product);
 
 		return entity;
 	}
 
-	private void deleteMockEntity(Product entity) {
+	private void deleteMockEntity(ProductReview entity) {
 
 		entityRepository.deleteById(entity.getId());
-		productCategoryRepository.deleteById(entity.getProductCategory().getId());
-		productBrandRepository.deleteById(entity.getProductBrand().getId());
+		productRepository.deleteById(entity.getProduct().getId());
+		productCategoryRepository.deleteById(entity.getProduct().getProductCategory().getId());
+		productBrandRepository.deleteById(entity.getProduct().getProductBrand().getId());
+		individualRepository.deleteById(entity.getIndividual().getId());
 		legalEntityRepository.deleteById(entity.getLegalEntity().getId());
+
 	}
 }
