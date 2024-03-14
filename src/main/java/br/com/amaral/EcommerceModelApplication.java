@@ -27,7 +27,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class EcommerceModelApplication implements AsyncConfigurer {
 
 	public static void main(String[] args) {
-		
+			
 		SpringApplication.run(EcommerceModelApplication.class, args);
 	}
 

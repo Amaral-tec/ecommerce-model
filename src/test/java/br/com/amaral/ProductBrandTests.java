@@ -18,17 +18,22 @@ import org.springframework.web.context.WebApplicationContext;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import br.com.amaral.model.Access;
-import br.com.amaral.repository.IAccessRepository;
+import br.com.amaral.model.ProductBrand;
+import br.com.amaral.model.LegalEntity;
+import br.com.amaral.repository.IProductBrandRepository;
+import br.com.amaral.repository.ILegalEntityRepository;
 import br.com.amaral.service.RandomEntityGenerator;
 import junit.framework.TestCase;
 
 @Profile("test")
 @SpringBootTest
-class AccessTests extends TestCase {
+class ProductBrandTests extends TestCase {
 
 	@Autowired
-	private IAccessRepository entityRepository;
+	private IProductBrandRepository entityRepository;
+		
+	@Autowired
+	private ILegalEntityRepository legalEntityRepository;
 	
 	@Autowired
 	private WebApplicationContext wac;
@@ -39,24 +44,29 @@ class AccessTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 	    MockMvc mockMvc = builder.build();
 	    
-	    Access entity = RandomEntityGenerator.createAccess();
+	    LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
+	    legalEntityRepository.save(legalEntity);
+	    
+	    ProductBrand entity = RandomEntityGenerator.createProductBrand();
+	    entity.setLegalEntity(legalEntity);
 	    
 	    ObjectMapper objectMapper = new ObjectMapper();
 	    
 	    ResultActions returnApi = mockMvc
-	    						 .perform(MockMvcRequestBuilders.post("/create-access")
+	    						 .perform(MockMvcRequestBuilders.post("/create-product-brand")
 	    						 .content(objectMapper.writeValueAsString(entity))
 	    						 .accept(MediaType.APPLICATION_JSON)
 	    						 .contentType(MediaType.APPLICATION_JSON));
 	     
 	    System.out.println("API Response: " + returnApi.andReturn().getResponse().getContentAsString());
 	     
-	    Access returnEntity = objectMapper.readValue(returnApi.andReturn().getResponse().getContentAsString(),
-				Access.class);
+	    ProductBrand returnEntity = objectMapper.readValue(returnApi.andReturn().getResponse().getContentAsString(),
+	    		ProductBrand.class);
 	    
 	    assertEquals(entity.getDescription(), returnEntity.getDescription());
 	    
 	    entityRepository.deleteById(returnEntity.getId());
+	    legalEntityRepository.deleteById(legalEntity.getId());
 	}
 
 	@Test
@@ -65,13 +75,17 @@ class AccessTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		Access entity = RandomEntityGenerator.createAccess();
+		LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
+	    legalEntityRepository.save(legalEntity);
+	    
+	    ProductBrand entity = RandomEntityGenerator.createProductBrand();
+	    entity.setLegalEntity(legalEntity);
 		entity = entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
 		ResultActions returnApi = mockMvc
-				.perform(MockMvcRequestBuilders.post("/delete-access").content(objectMapper.writeValueAsString(entity))
+				.perform(MockMvcRequestBuilders.post("/delete-product-brand").content(objectMapper.writeValueAsString(entity))
 				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON));
 
 		System.out.println("API Response: " + returnApi.andReturn().getResponse().getContentAsString());
@@ -81,6 +95,7 @@ class AccessTests extends TestCase {
 		assertEquals(200, returnApi.andReturn().getResponse().getStatus());
 
 		entityRepository.deleteById(entity.getId());
+		legalEntityRepository.deleteById(legalEntity.getId());
 	}
 
 	@Test
@@ -89,13 +104,17 @@ class AccessTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		Access entity = RandomEntityGenerator.createAccess();
+		LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
+	    legalEntityRepository.save(legalEntity);
+	    
+	    ProductBrand entity = RandomEntityGenerator.createProductBrand();
+	    entity.setLegalEntity(legalEntity);
 		entity = entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
 		ResultActions returnApi = mockMvc.perform(MockMvcRequestBuilders
-				.delete("/delete-access-by-id/" + entity.getId()).content(objectMapper.writeValueAsString(entity))
+				.delete("/delete-product-brand-by-id/" + entity.getId()).content(objectMapper.writeValueAsString(entity))
 				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON));
 
 		System.out.println("API Response: " + returnApi.andReturn().getResponse().getContentAsString());
@@ -105,6 +124,7 @@ class AccessTests extends TestCase {
 		assertEquals(200, returnApi.andReturn().getResponse().getStatus());
 
 		entityRepository.deleteById(entity.getId());
+		legalEntityRepository.deleteById(legalEntity.getId());
 	}
 
 	@Test
@@ -113,23 +133,28 @@ class AccessTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		Access entity = RandomEntityGenerator.createAccess();
+		LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
+	    legalEntityRepository.save(legalEntity);
+	    
+	    ProductBrand entity = RandomEntityGenerator.createProductBrand();
+	    entity.setLegalEntity(legalEntity);
 		entity = entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
-		ResultActions returnApi = mockMvc.perform(MockMvcRequestBuilders.get("/get-access/" + entity.getId())
+		ResultActions returnApi = mockMvc.perform(MockMvcRequestBuilders.get("/get-product-Brand/" + entity.getId())
 				.content(objectMapper.writeValueAsString(entity)).accept(MediaType.APPLICATION_JSON)
 				.contentType(MediaType.APPLICATION_JSON));
 
 		assertEquals(200, returnApi.andReturn().getResponse().getStatus());
 
-		Access returnEntity = objectMapper.readValue(returnApi.andReturn().getResponse().getContentAsString(),
-				Access.class);
+		ProductBrand returnEntity = objectMapper.readValue(returnApi.andReturn().getResponse().getContentAsString(),
+				ProductBrand.class);
 
 		assertEquals(entity.getId(), returnEntity.getId());
 
 		entityRepository.deleteById(entity.getId());
+		legalEntityRepository.deleteById(legalEntity.getId());
 	}
 	
 	@Test
@@ -138,19 +163,27 @@ class AccessTests extends TestCase {
 	    DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 	    MockMvc mockMvc = builder.build();
 
-	    List<Access> entityList = new ArrayList<>();
-	    entityList.add(RandomEntityGenerator.createAccess());
-	    entityList.add(RandomEntityGenerator.createAccess());
+	    LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
+	    legalEntityRepository.save(legalEntity);
+	    
+	    List<ProductBrand> entityList = new ArrayList<>();
+	    for (int i = 0; i < 2; i++) {
+	    	ProductBrand entity = RandomEntityGenerator.createProductBrand();
+	        entity.setLegalEntity(legalEntity);
+	        entityList.add(entityRepository.save(entity));
+	    }
 
-	    entityList = entityRepository.saveAll(entityList);
-
-	    ResultActions returnApi = mockMvc.perform(MockMvcRequestBuilders.get("/find-all-access")
+	    ResultActions returnApi = mockMvc.perform(MockMvcRequestBuilders.get("/find-all-product-brand")
 	            .accept(MediaType.APPLICATION_JSON)
 	            .contentType(MediaType.APPLICATION_JSON));
 
 	    assertEquals(200, returnApi.andReturn().getResponse().getStatus());
 
-	    entityRepository.deleteAll(entityList);
+	    for (ProductBrand entity : entityList) {
+	        entityRepository.deleteById(entity.getId());
+	    }
+	    
+	    legalEntityRepository.deleteById(legalEntity.getId());
 	}
 
 	@Test
@@ -159,17 +192,22 @@ class AccessTests extends TestCase {
 		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
 		MockMvc mockMvc = builder.build();
 
-		Access entity = RandomEntityGenerator.createAccess();
+		LegalEntity legalEntity = RandomEntityGenerator.generateLegalEntity();
+	    legalEntityRepository.save(legalEntity);
+	    
+	    ProductBrand entity = RandomEntityGenerator.createProductBrand();
+	    entity.setLegalEntity(legalEntity);
 		entity = entityRepository.save(entity);
 
 		ObjectMapper objectMapper = new ObjectMapper();
 
 		ResultActions returnApi = mockMvc.perform(MockMvcRequestBuilders
-				.get("/find-access-by-name/" + entity.getDescription()).content(objectMapper.writeValueAsString(entity))
+				.get("/find-product-brand-by-name/" + entity.getDescription()).content(objectMapper.writeValueAsString(entity))
 				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON));
 
 		assertEquals(200, returnApi.andReturn().getResponse().getStatus());
 
 		entityRepository.deleteById(entity.getId());
+		legalEntityRepository.deleteById(legalEntity.getId());
 	}
 }

@@ -7,12 +7,15 @@ import java.util.Date;
 
 import org.springframework.stereotype.Service;
 
+import br.com.amaral.enums.AccountPayableStatus;
 import br.com.amaral.enums.TypePerson;
 import br.com.amaral.model.Access;
+import br.com.amaral.model.AccountPayable;
 import br.com.amaral.model.DiscountCoupon;
 import br.com.amaral.model.Individual;
 import br.com.amaral.model.LegalEntity;
 import br.com.amaral.model.PaymentMethod;
+import br.com.amaral.model.ProductBrand;
 
 @Service
 public class RandomEntityGenerator {
@@ -21,6 +24,19 @@ public class RandomEntityGenerator {
 	private static final Date date = calendar.getTime();
 	private static final BigDecimal value = new BigDecimal("100.0");
 
+	public static AccountPayable createAccountPayable() {
+
+		AccountPayable accountPayable = new AccountPayable();
+		accountPayable.setDescription("Test Name" + Calendar.getInstance().getTimeInMillis());
+		accountPayable.setStatus(AccountPayableStatus.PAID);
+		accountPayable.setInvoiceAmount(value);
+		accountPayable.setInvoiceDueDate(date);
+		accountPayable.setPaymentDate(date);
+		accountPayable.setPaymentAmount(value);
+
+		return accountPayable;
+	}
+	
 	public static Access createAccess() {
 
 		Access access = new Access();
@@ -81,5 +97,13 @@ public class RandomEntityGenerator {
 		paymentMethod.setDescription("Test Name" + Calendar.getInstance().getTimeInMillis());
 
 		return paymentMethod;
+	}
+	
+	public static ProductBrand createProductBrand() {
+
+		ProductBrand productBrand = new ProductBrand();
+		productBrand.setDescription("Test Name" + Calendar.getInstance().getTimeInMillis());
+
+		return productBrand;
 	}
 }

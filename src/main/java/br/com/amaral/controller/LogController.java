@@ -63,7 +63,6 @@ public class LogController <T> {
         return new ResponseEntity<>(entityClass.getSimpleName() + " list logged successfully", HttpStatus.OK);
     }
 
-    // Método para converter a lista para uma representação de string
     private String convertListToString(List<T> entityList) {
         return entityList.stream().map(Object::toString).collect(Collectors.joining(", "));
     }

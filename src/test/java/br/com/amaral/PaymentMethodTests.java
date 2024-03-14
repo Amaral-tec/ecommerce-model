@@ -28,10 +28,10 @@ import junit.framework.TestCase;
 class PaymentMethodTests extends TestCase {
 
 	@Autowired
-	private WebApplicationContext wac;
-
-	@Autowired
 	private IPaymentMethodRepository entityRepository;
+	
+	@Autowired
+	private WebApplicationContext wac;
 
 	@Test
 	void testRestApiSave() throws JsonProcessingException, Exception {

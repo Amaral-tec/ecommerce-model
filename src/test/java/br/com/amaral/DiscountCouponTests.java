@@ -30,13 +30,13 @@ import junit.framework.TestCase;
 class DiscountCouponTests extends TestCase {
 
 	@Autowired
-	private WebApplicationContext wac;
-
-	@Autowired
 	private IDiscountCouponRepository entityRepository;
 		
 	@Autowired
 	private ILegalEntityRepository legalEntityRepository;
+	
+	@Autowired
+	private WebApplicationContext wac;
 
 	@Test
 	void testRestApiSave() throws JsonProcessingException, Exception {
