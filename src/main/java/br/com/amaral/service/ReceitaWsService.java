@@ -11,7 +11,7 @@ import br.com.amaral.model.dto.ReceitaWsDTO;
 @Service
 public class ReceitaWsService {
 	
-	public ReceitaWsDTO entityReceitaWsDTO(String cnpj) {
+	public ReceitaWsDTO getEntityReceitaWsDTO(String cnpj) {
 		return new RestTemplate().getForEntity("https://receitaws.com.br/v1/cnpj/" + cnpj, ReceitaWsDTO.class).getBody();
 	}
 

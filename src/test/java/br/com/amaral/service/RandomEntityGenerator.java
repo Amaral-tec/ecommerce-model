@@ -19,6 +19,7 @@ import br.com.amaral.model.ProductBrand;
 import br.com.amaral.model.ProductCategory;
 import br.com.amaral.model.ProductImage;
 import br.com.amaral.model.ProductReview;
+import br.com.amaral.model.PurchaseInvoice;
 
 @Service
 public class RandomEntityGenerator {
@@ -156,5 +157,16 @@ public class RandomEntityGenerator {
 		productReview.setReviewDate(date);
 
 		return productReview;
+	}
+	
+	public static PurchaseInvoice createPurchaseInvoice() {
+
+		PurchaseInvoice purchaseInvoice = new PurchaseInvoice();
+		purchaseInvoice.setNumber("10");
+		purchaseInvoice.setInvoiceDate(date);
+		purchaseInvoice.setTotalAmount(value);
+		purchaseInvoice.setTaxAmount(value);
+
+		return purchaseInvoice;
 	}
 }
