@@ -47,22 +47,6 @@ public class ProductImageController {
 	}
 
 	@ResponseBody
-	@PostMapping(value = "**/delete-product-image")
-	public ResponseEntity<String> deleteProductImage(@RequestBody ProductImage entity) {
-
-		if (!productImageRepository.existsById(entity.getId())) {
-			return new ResponseEntity<>(
-					"Operation not performed: Not included in the ID database: " + entity.getId(),
-					HttpStatus.NOT_FOUND);
-		}
-
-		entity.setIsDeleted(true);
-		productImageRepository.save(entity);
-		logController.logEntity(entity);
-		return new ResponseEntity<>("OK: Deletion completed successfully.", HttpStatus.OK);
-	}
-
-	@ResponseBody
 	@DeleteMapping(value = "**/delete-product-image-by-id/{id}")
 	public ResponseEntity<String> deleteProductImageById(@PathVariable("id") Long id) throws ExceptionProject {
 

@@ -100,6 +100,8 @@ public class PersonController {
 	@PostMapping(value = "**/delete-individual")
 	public ResponseEntity<String> deleteIndividual(@RequestBody Individual entity) {
 
+		//add exclusao de acesso
+		
 		if (!individualRepository.findById(entity.getId()).isPresent()) {
 			return new ResponseEntity<>("Operation not performed: Not included in the ID database " + entity.getId(), HttpStatus.NOT_FOUND);
 		}
@@ -125,6 +127,8 @@ public class PersonController {
 	@ResponseBody
 	@DeleteMapping(value = "**/delete-individual-by-id/{id}")
 	public ResponseEntity<String> deleteIndividualById(@PathVariable("id") Long id) throws ExceptionProject {
+		
+		//add exclusao de acesso
 		
 		Individual entity = DoesIndividualExist(id);
 		

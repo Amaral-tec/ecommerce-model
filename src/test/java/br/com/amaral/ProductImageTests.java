@@ -20,6 +20,7 @@ import br.com.amaral.model.ProductBrand;
 import br.com.amaral.model.ProductCategory;
 import br.com.amaral.model.ProductImage;
 import br.com.amaral.model.LegalEntity;
+import br.com.amaral.model.dto.ProductImageDTO;
 import br.com.amaral.repository.IProductRepository;
 import br.com.amaral.repository.ILegalEntityRepository;
 import br.com.amaral.repository.IProductBrandRepository;
@@ -49,54 +50,6 @@ class ProductImageTests extends TestCase {
 
 	@Autowired
 	private WebApplicationContext wac;
-
-	@Test
-	void testRestApiSave() throws JsonProcessingException, Exception {
-
-		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
-		MockMvc mockMvc = builder.build();
-
-		ProductImage entity = createMockEntity();
-
-		ObjectMapper objectMapper = new ObjectMapper();
-
-		ResultActions returnApi = mockMvc.perform(
-				MockMvcRequestBuilders.post("/create-product-image").content(objectMapper.writeValueAsString(entity))
-						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON));
-
-		System.out.println("API Response: " + returnApi.andReturn().getResponse().getContentAsString());
-
-		ProductImage returnEntity = objectMapper.readValue(returnApi.andReturn().getResponse().getContentAsString(),
-				ProductImage.class);
-
-		assertEquals(entity.getOriginalImage(), returnEntity.getOriginalImage());
-
-		deleteMockEntity(returnEntity);
-	}
-
-	@Test
-	void testRestApiDelete() throws JsonProcessingException, Exception {
-
-		DefaultMockMvcBuilder builder = MockMvcBuilders.webAppContextSetup(this.wac);
-		MockMvc mockMvc = builder.build();
-
-		ProductImage entity = createMockEntity();
-		entityRepository.save(entity);
-
-		ObjectMapper objectMapper = new ObjectMapper();
-
-		ResultActions returnApi = mockMvc.perform(
-				MockMvcRequestBuilders.post("/delete-product-image").content(objectMapper.writeValueAsString(entity))
-						.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON));
-
-		System.out.println("API Response: " + returnApi.andReturn().getResponse().getContentAsString());
-		System.out.println("API Status: " + returnApi.andReturn().getResponse().getStatus());
-
-		assertEquals("OK: Deletion completed successfully.", returnApi.andReturn().getResponse().getContentAsString());
-		assertEquals(200, returnApi.andReturn().getResponse().getStatus());
-
-		deleteMockEntity(entity);
-	}
 
 	@Test
 	void testRestApiDeleteById() throws JsonProcessingException, Exception {

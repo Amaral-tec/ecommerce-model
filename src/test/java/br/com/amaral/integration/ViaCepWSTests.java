@@ -20,7 +20,7 @@ import junit.framework.TestCase;
 
 @Profile("test")
 @SpringBootTest
-class ViaCepAPITests extends TestCase {
+class ViaCepWSTests extends TestCase {
 	
 	@Autowired
 	private WebApplicationContext wac;

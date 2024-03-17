@@ -35,6 +35,8 @@ import okhttp3.OkHttpClient;
 
 /**
  * Link https://docs.melhorenvio.com.br/docs
+ * 
+ * https://sandbox.melhorenvio.com.br/painel
  */
 @RestController
 public class MelhorEnvioController {

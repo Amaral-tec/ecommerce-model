@@ -14,7 +14,7 @@ public interface IProductImageRepository extends JpaRepository<ProductImage, Lon
 	
 	@Transactional
 	@Modifying(flushAutomatically = true)
-	@Query(nativeQuery = true, value = "UPDATE FROM product_images SET is_deleted = True WHERE product_id = ?1")
+	@Query(nativeQuery = true, value = "UPDATE product_images SET is_deleted = True WHERE product_id = ?1")
 	void deleteProductImage(Long productId);
 	
 	@Query("SELECT a FROM ProductImage a WHERE a.product.id = ?1")
