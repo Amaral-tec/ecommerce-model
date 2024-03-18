@@ -17,14 +17,14 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "juno_bank_slip")
-@SequenceGenerator(name = "seq_juno_bank_slip", sequenceName = "seq_juno_bank_slip", allocationSize = 1, initialValue = 1)
-public class JunoBankSlip implements Serializable {
+@Table(name = "bank_slips")
+@SequenceGenerator(name = "seq_bank_slip", sequenceName = "seq_bank_slip", allocationSize = 1, initialValue = 1)
+public class BankSlip implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_juno_bank_slip")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_bank_slip")
 	private Long id;
 
 	private String code = "";
@@ -212,7 +212,7 @@ public class JunoBankSlip implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		JunoBankSlip other = (JunoBankSlip) obj;
+		BankSlip other = (BankSlip) obj;
 		return Objects.equals(id, other.id);
 	}
 

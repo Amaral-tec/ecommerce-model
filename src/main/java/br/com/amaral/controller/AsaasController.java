@@ -14,13 +14,13 @@ import br.com.amaral.model.dto.JunoBankSlipRequestDTO;
 import br.com.amaral.service.JunoResourcesService;
 
 @RestController
-public class JunoController {
+public class AsaasController {
 	
 	@Autowired
 	private JunoResourcesService junoResourcesService;
 
 	@ResponseBody
-	@PostMapping(value = "**/generate-juno-charge")
+	@PostMapping(value = "**/generate-charge")
 	public ResponseEntity<String> generateCharge(@RequestBody @Valid JunoBankSlipRequestDTO bankSlipRequest) throws Exception{
 		
 		return  new ResponseEntity<>(junoResourcesService.generateCharge(bankSlipRequest), HttpStatus.OK);
@@ -28,7 +28,7 @@ public class JunoController {
 	
 	
 	@ResponseBody
-	@PostMapping(value = "**/cancel-juno-charge")
+	@PostMapping(value = "**/cancel-charge")
 	public ResponseEntity<String> cancelCharge(@RequestBody @Valid String code) throws Exception{
 		
 		return new ResponseEntity<>(junoResourcesService.cancelChance(code), HttpStatus.OK);

@@ -21,8 +21,8 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 
 import br.com.amaral.constant.APITokens;
-import br.com.amaral.model.JunoAccessToken;
-import br.com.amaral.model.JunoBankSlip;
+import br.com.amaral.model.BillingAccessToken;
+import br.com.amaral.model.BankSlip;
 import br.com.amaral.model.Sale;
 import br.com.amaral.model.dto.JunoAPIChargeDTO;
 import br.com.amaral.model.dto.JunoBankSlipDataDTO;
@@ -51,10 +51,10 @@ public class JunoResourcesService implements Serializable {
 
 	public String generateInvoiceKey() throws Exception {
 
-		JunoAccessToken accessToken = this.getJunoToken();
+		BillingAccessToken accessToken = this.getJunoToken();
 
-		Client client = new HostIgnoringClient("https://api.juno.com.br/").hostIgnoringClient();
-		WebResource webResource = client.resource("https://api.juno.com.br/pix/keys");
+		Client client = new HostIgnoringClient(APITokens.URL_JUNO).hostIgnoringClient();
+		WebResource webResource = client.resource(APITokens.URL_JUNO + "pix/keys");
 
 		ClientResponse clientResponse = webResource.accept("application/json;charset=UTF-8")
 				.header("Content-Type", "application/json").header("X-API-Version", 2)
@@ -66,19 +66,19 @@ public class JunoResourcesService implements Serializable {
 
 	}
 
-	public JunoAccessToken getJunoToken() throws Exception {
+	public BillingAccessToken getJunoToken() throws Exception {
 
-		JunoAccessToken accessToken = junoAccessTokenService.getActiveToken();
+		BillingAccessToken accessToken = junoAccessTokenService.getActiveToken();
 
 		if (accessToken == null || (accessToken != null && accessToken.isExpired())) {
 
 			String clienteID = "vi7QZerW09C8JG1o";
 			String secretID = "$A_+&ksH}&+2<3VM]1MZqc,F_xif_-Dc";
 
-			Client client = new HostIgnoringClient("https://api.juno.com.br/").hostIgnoringClient();
+			Client client = new HostIgnoringClient(APITokens.URL_JUNO).hostIgnoringClient();
 
 			WebResource webResource = client
-					.resource("https://api.juno.com.br/authorization-server/oauth/token?grant_type=client_credentials");
+					.resource(APITokens.URL_JUNO + "authorization-server/oauth/token?grant_type=client_credentials");
 
 			String basicKey = clienteID + ":" + secretID;
 			String authentication_token = DatatypeConverter.printBase64Binary(basicKey.getBytes());
@@ -92,7 +92,7 @@ public class JunoResourcesService implements Serializable {
 				junoAccesTokenRepository.deleteAll();
 				junoAccesTokenRepository.flush();
 
-				JunoAccessToken newAccessToken = clientResponse.getEntity(JunoAccessToken.class);
+				BillingAccessToken newAccessToken = clientResponse.getEntity(BillingAccessToken.class);
 				newAccessToken.setToken_access_base64(authentication_token);
 
 				newAccessToken = junoAccesTokenRepository.saveAndFlush(newAccessToken);
@@ -132,11 +132,11 @@ public class JunoResourcesService implements Serializable {
 		charge.getBilling().setEmail(bankSlipRequest.getEmail());
 		charge.getBilling().setPhone(bankSlipRequest.getPayerPhone());
 
-		JunoAccessToken accessToken = this.getJunoToken();
+		BillingAccessToken accessToken = this.getJunoToken();
 		if (accessToken != null) {
 
-			Client client = new HostIgnoringClient("https://api.juno.com.br/").hostIgnoringClient();
-			WebResource webResource = client.resource("https://api.juno.com.br/charges");
+			Client client = new HostIgnoringClient(APITokens.URL_JUNO).hostIgnoringClient();
+			WebResource webResource = client.resource(APITokens.URL_JUNO + "charges");
 
 			ObjectMapper objectMapper = new ObjectMapper();
 			String json = objectMapper.writeValueAsString(charge);
@@ -160,11 +160,11 @@ public class JunoResourcesService implements Serializable {
 
 				int recurrence = 1;
 
-				List<JunoBankSlip> bankSlipList = new ArrayList<>();
+				List<BankSlip> bankSlipList = new ArrayList<>();
 
 				for (JunoBankSlipDataDTO data : jsonReturnObject.get_embedded().getCharges()) {
 
-					JunoBankSlip bankSlip = new JunoBankSlip();
+					BankSlip bankSlip = new BankSlip();
 
 					bankSlip.setLegalEntity(sale.getLegalEntity());
 					bankSlip.setSale(sale);
@@ -200,17 +200,17 @@ public class JunoResourcesService implements Serializable {
 
 	public String cancelChance(String code) throws Exception {
 
-		JunoAccessToken accessToken = this.getJunoToken();
+		BillingAccessToken accessToken = this.getJunoToken();
 
-		Client client = new HostIgnoringClient("https://api.juno.com.br/").hostIgnoringClient();
-		WebResource webResource = client.resource("https://api.juno.com.br/charges/" + code + "/cancelation");
+		Client client = new HostIgnoringClient(APITokens.URL_JUNO).hostIgnoringClient();
+		WebResource webResource = client.resource(APITokens.URL_JUNO + "charges/" + code + "/cancelation");
 
 		ClientResponse clientResponse = webResource.accept(MediaType.APPLICATION_JSON).header("X-Api-Version", 2)
 				.header("X-Resource-Token", APITokens.TOKEN_PRIVATE_JUNO)
 				.header("Authorization", "Bearer " + accessToken.getAccess_token()).put(ClientResponse.class);
 
 		if (clientResponse.getStatus() == 204) {
-			return "Cancelado com sucesso";
+			return "Cancellation completed successfully";
 		}
 
 		return clientResponse.getEntity(String.class);

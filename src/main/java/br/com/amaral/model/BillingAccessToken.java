@@ -16,14 +16,14 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 @Entity
-@Table(name = "juno_access_token")
-@SequenceGenerator(name = "seq_juno_access_token", sequenceName = "seq_juno_access_token", allocationSize = 1, initialValue = 1)
-public class JunoAccessToken implements Serializable {
+@Table(name = "billing_access_tokens")
+@SequenceGenerator(name = "seq_billing_access_token", sequenceName = "seq_billing_access_token", allocationSize = 1, initialValue = 1)
+public class BillingAccessToken implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_juno_access_token")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq_billing_access_token")
 	private Long id;
 
 	@Column(columnDefinition = "text")
@@ -143,7 +143,7 @@ public class JunoAccessToken implements Serializable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		JunoAccessToken other = (JunoAccessToken) obj;
+		BillingAccessToken other = (BillingAccessToken) obj;
 		return Objects.equals(id, other.id);
 	}
 

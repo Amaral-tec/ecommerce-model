@@ -6,7 +6,7 @@ import javax.persistence.PersistenceContext;
 
 import org.springframework.stereotype.Service;
 
-import br.com.amaral.model.JunoAccessToken;
+import br.com.amaral.model.BillingAccessToken;
 
 @Service
 public class JunoAccessTokenService {
@@ -14,13 +14,13 @@ public class JunoAccessTokenService {
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	public JunoAccessToken getActiveToken() {
+	public BillingAccessToken getActiveToken() {
 
 		try {
-			JunoAccessToken accessTokenJuno = (JunoAccessToken) entityManager
-					.createQuery("SELECT a FROM AccessTokenJuno a ").setMaxResults(1).getSingleResult();
+			BillingAccessToken billingAccessToken = (BillingAccessToken) entityManager
+					.createQuery("SELECT a FROM BillingAccessToken a ").setMaxResults(1).getSingleResult();
 
-			return accessTokenJuno;
+			return billingAccessToken;
 
 		} catch (NoResultException e) {
 			return null;

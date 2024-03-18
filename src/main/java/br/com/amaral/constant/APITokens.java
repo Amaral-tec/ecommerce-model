@@ -8,6 +8,7 @@ public class APITokens {
 	
 	public static final String TOKEN_PRIVATE_JUNO = "39F561904D53B1A6B198CDF6F775D911D0FA3CDBE3C6CD69117E9BEB3BE54D1E";
     public static final String JUNO_INVOICE_KEY = "7cf146ca-9230-4d77-ad3d-2778cafcd856";
+	public static final String URL_JUNO = "https://api.juno.com.br/";
     
     public static final String TOKEN_ASAAS = "$aact_YTU5YTE0M2M2N2I4MTliNzk0YTI5N2U5MzdjNWZmNDQ6OjAwMDAwMDAwMDAwMDA0MDQ0Njk6OiRhYWNoXzQzMmRmZGY3LWVjYmMtNDIyZS05ZDI1LTdhYzFhZDdlMmVlNg==";
     public static final String URL_ASAAS = "https://www.asaas.com/api/v3/";

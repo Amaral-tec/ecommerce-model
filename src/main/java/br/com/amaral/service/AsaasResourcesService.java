@@ -1,22 +1,12 @@
 package br.com.amaral.service;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import javax.ws.rs.core.MediaType;
-import javax.xml.bind.DatatypeConverter;
-
 import org.apache.tomcat.util.json.JSONParser;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.sun.jersey.api.client.Client;
@@ -24,17 +14,9 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 
 import br.com.amaral.constant.APITokens;
-import br.com.amaral.model.JunoAccessToken;
-import br.com.amaral.model.JunoBankSlip;
-import br.com.amaral.model.Sale;
 import br.com.amaral.model.dto.AsaasBankSlipRequestDTO;
-import br.com.amaral.model.dto.JunoAPIChargeDTO;
-import br.com.amaral.model.dto.JunoBankSlipDataDTO;
-import br.com.amaral.model.dto.JunoBankSlipRequestDTO;
-import br.com.amaral.model.dto.JunoBankSlipReturnDTO;
-import br.com.amaral.repository.IJunoAccesTokenRepository;
-import br.com.amaral.repository.IJunoBankSlipRepository;
-import br.com.amaral.repository.ISaleRepository;
+import br.com.amaral.model.dto.AsaasCustomerDTO;
+import br.com.amaral.util.ValidateCPF;
 
 /**
  * Link https://docs.asaas.com/reference
@@ -45,17 +27,6 @@ public class AsaasResourcesService implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@Autowired
-	private JunoAccessTokenService junoAccessTokenService;
-
-	@Autowired
-	private IJunoAccesTokenRepository junoAccesTokenRepository;
-
-	@Autowired
-	private ISaleRepository saleRepository;
-
-	@Autowired
-	private IJunoBankSlipRepository junoBankSlipRepository;
 
 	public String generateInvoiceKey() throws Exception {
 
@@ -63,167 +34,66 @@ public class AsaasResourcesService implements Serializable {
 		WebResource webResource = client.resource(APITokens.URL_ASAAS + "pix/addressKeys");
 
 		ClientResponse clientResponse = webResource.accept("application/json;charset=UTF-8")
-				.header("Content-Type", "application/json")
-				.header("access_token", APITokens.TOKEN_ASAAS)
+				.header("Content-Type", "application/json").header("access_token", APITokens.TOKEN_ASAAS)
 				.post(ClientResponse.class, "{\"type\":\"EVP\"}");
 
 		String result = clientResponse.getEntity(String.class);
 		clientResponse.close();
-		
+
 		return result;
 
 	}
-	
 
+	public String searchCustomer(AsaasBankSlipRequestDTO bankSlipRequest) throws Exception {
 
-	public JunoAccessToken getJunoToken() throws Exception {
+		String customer_id = "";
 
-		JunoAccessToken accessToken = junoAccessTokenService.getActiveToken();
+		Client client = new HostIgnoringClient(APITokens.URL_ASAAS).hostIgnoringClient();
+		WebResource webResource = client
+				.resource(APITokens.URL_ASAAS + "customers?email=" + bankSlipRequest.getEmail());
 
-		if (accessToken == null || (accessToken != null && accessToken.isExpired())) {
+		ClientResponse clientResponse = webResource.accept("application/json;charset=UTF-8")
+				.header("Content-Type", "application/json").header("access_token", APITokens.TOKEN_ASAAS)
+				.get(ClientResponse.class);
 
-			String clienteID = "vi7QZerW09C8JG1o";
-			String secretID = "$A_+&ksH}&+2<3VM]1MZqc,F_xif_-Dc";
+		LinkedHashMap<String, Object> parser = new JSONParser(clientResponse.getEntity(String.class)).parseObject();
+		clientResponse.close();
+		Integer total = Integer.parseInt(parser.get("totalCount").toString());
 
-			Client client = new HostIgnoringClient("https://api.juno.com.br/").hostIgnoringClient();
+		if (total <= 0) {
 
-			WebResource webResource = client
-					.resource("https://api.juno.com.br/authorization-server/oauth/token?grant_type=client_credentials");
+			AsaasCustomerDTO customerDTO = new AsaasCustomerDTO();
 
-			String basicKey = clienteID + ":" + secretID;
-			String authentication_token = DatatypeConverter.printBase64Binary(basicKey.getBytes());
-
-			ClientResponse clientResponse = webResource.accept(MediaType.APPLICATION_FORM_URLENCODED)
-					.type(MediaType.APPLICATION_FORM_URLENCODED)
-					.header("Content-Type", "application/x-www-form-urlencoded")
-					.header("Authorization", "Basic " + authentication_token).post(ClientResponse.class);
-
-			if (clientResponse.getStatus() == 200) {
-				junoAccesTokenRepository.deleteAll();
-				junoAccesTokenRepository.flush();
-
-				JunoAccessToken newAccessToken = clientResponse.getEntity(JunoAccessToken.class);
-				newAccessToken.setToken_access_base64(authentication_token);
-
-				newAccessToken = junoAccesTokenRepository.saveAndFlush(newAccessToken);
-
-				return newAccessToken;
+			if (!ValidateCPF.isCPF(bankSlipRequest.getPayerCpfCnpj())) {
+				customerDTO.setCpfCnpj("60051803046");
 			} else {
-				return null;
-			}
-		} else {
-			return accessToken;
-		}
-	}
-
-	public String generateCharge(JunoBankSlipRequestDTO bankSlipRequest) throws Exception {
-
-		Sale sale = saleRepository.findById(bankSlipRequest.getSaleId()).get();
-
-		JunoAPIChargeDTO charge = new JunoAPIChargeDTO();
-
-		charge.getCharge().setPixKey(APITokens.JUNO_INVOICE_KEY);
-		charge.getCharge().setDescription(bankSlipRequest.getDescription());
-		charge.getCharge().setAmount(Float.valueOf(bankSlipRequest.getTotalAmount()));
-		charge.getCharge().setInstallments(Integer.parseInt(bankSlipRequest.getInstallments()));
-
-		Calendar dueDate = Calendar.getInstance();
-		dueDate.add(Calendar.DAY_OF_MONTH, 7);
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyy-MM-dd");
-		charge.getCharge().setDueDate(dateFormat.format(dueDate.getTime()));
-
-		charge.getCharge().setFine(BigDecimal.valueOf(1.00));
-		charge.getCharge().setInterest(BigDecimal.valueOf(1.00));
-		charge.getCharge().setMaxOverdueDays(10);
-		charge.getCharge().getPaymentTypes().add("BOLETO_PIX");
-
-		charge.getBilling().setName(bankSlipRequest.getPayerName());
-		charge.getBilling().setDocument(bankSlipRequest.getPayerCpfCnpj());
-		charge.getBilling().setEmail(bankSlipRequest.getEmail());
-		charge.getBilling().setPhone(bankSlipRequest.getPayerPhone());
-
-		JunoAccessToken accessToken = this.getJunoToken();
-		if (accessToken != null) {
-
-			Client client = new HostIgnoringClient("https://api.juno.com.br/").hostIgnoringClient();
-			WebResource webResource = client.resource("https://api.juno.com.br/charges");
-
-			ObjectMapper objectMapper = new ObjectMapper();
-			String json = objectMapper.writeValueAsString(charge);
-
-			ClientResponse clientResponse = webResource.accept("application/json;charset=UTF-8")
-					.header("Content-Type", "application/json;charset=UTF-8").header("X-API-Version", 2)
-					.header("X-Resource-Token", APITokens.TOKEN_PRIVATE_JUNO)
-					.header("Authorization", "Bearer " + accessToken.getAccess_token())
-					.post(ClientResponse.class, json);
-
-			String result = clientResponse.getEntity(String.class);
-
-			if (clientResponse.getStatus() == 200) {
-
-				clientResponse.close();
-				objectMapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
-
-				JunoBankSlipReturnDTO jsonReturnObject = objectMapper.readValue(result,
-						new TypeReference<JunoBankSlipReturnDTO>() {
-						});
-
-				int recurrence = 1;
-
-				List<JunoBankSlip> bankSlipList = new ArrayList<>();
-
-				for (JunoBankSlipDataDTO data : jsonReturnObject.get_embedded().getCharges()) {
-
-					JunoBankSlip bankSlip = new JunoBankSlip();
-
-					bankSlip.setLegalEntity(sale.getLegalEntity());
-					bankSlip.setSale(sale);
-					bankSlip.setCode(data.getCode());
-					bankSlip.setLink(data.getLink());
-					bankSlip.setDueDate(new SimpleDateFormat("yyyy-MM-dd")
-							.format(new SimpleDateFormat("yyyy-MM-dd").parse(data.getDueDate())));
-					bankSlip.setCheckoutUrl(data.getCheckoutUrl());
-					bankSlip.setAmount(new BigDecimal(data.getAmount()));
-					bankSlip.setIdChrBankSlip(data.getId());
-					bankSlip.setInstallmentLink(data.getInstallmentLink());
-					bankSlip.setIdPix(data.getPix().getId());
-					bankSlip.setPayloadInBase64(data.getPix().getPayloadInBase64());
-					bankSlip.setImageInBase64(data.getPix().getImageInBase64());
-					bankSlip.setRecurrence(recurrence);
-
-					bankSlipList.add(bankSlip);
-					recurrence++;
-				}
-
-				junoBankSlipRepository.saveAllAndFlush(bankSlipList);
-
-				return bankSlipList.get(0).getLink();
-
-			} else {
-				return result;
+				customerDTO.setCpfCnpj(bankSlipRequest.getPayerCpfCnpj());
 			}
 
+			customerDTO.setEmail(bankSlipRequest.getEmail());
+			customerDTO.setName(bankSlipRequest.getPayerName());
+			customerDTO.setPhone(bankSlipRequest.getPayerPhone());
+
+			Client client2 = new HostIgnoringClient(APITokens.URL_ASAAS).hostIgnoringClient();
+			WebResource webResource2 = client2.resource(APITokens.URL_ASAAS + "customers");
+
+			ClientResponse clientResponse2 = webResource2.accept("application/json;charset=UTF-8")
+					.header("Content-Type", "application/json").header("access_token", APITokens.TOKEN_ASAAS)
+					.post(ClientResponse.class, new ObjectMapper().writeValueAsBytes(customerDTO));
+
+			LinkedHashMap<String, Object> parser2 = new JSONParser(clientResponse2.getEntity(String.class))
+					.parseObject();
+			clientResponse2.close();
+
+			customer_id = parser2.get("id").toString();
+
 		} else {
-			return "There is no access key for the API";
-		}
-	}
-
-	public String cancelChance(String code) throws Exception {
-
-		JunoAccessToken accessToken = this.getJunoToken();
-
-		Client client = new HostIgnoringClient("https://api.juno.com.br/").hostIgnoringClient();
-		WebResource webResource = client.resource("https://api.juno.com.br/charges/" + code + "/cancelation");
-
-		ClientResponse clientResponse = webResource.accept(MediaType.APPLICATION_JSON).header("X-Api-Version", 2)
-				.header("X-Resource-Token", APITokens.TOKEN_PRIVATE_JUNO)
-				.header("Authorization", "Bearer " + accessToken.getAccess_token()).put(ClientResponse.class);
-
-		if (clientResponse.getStatus() == 204) {
-			return "Cancelado com sucesso";
+			List<Object> data = (List<Object>) parser.get("data");
+			customer_id = new Gson().toJsonTree(data.get(0)).getAsJsonObject().get("id").toString().replaceAll("\"",
+					"");
 		}
 
-		return clientResponse.getEntity(String.class);
+		return customer_id;
 
 	}
 
